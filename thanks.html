@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Thank you! Your Museic Game code</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;0,800;1,800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#231f20;--ink2:#2f2a2b;--cream:#f8f3dc;--pink:#ec1c8c;--gold:#f5b324;--purple:#8a5cf0;--muted:#b9b1a3}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ink);color:var(--cream);font-family:Poppins,system-ui,sans-serif;min-height:100vh;padding:24px 18px 40px}
+.film{height:12px;background:repeating-linear-gradient(90deg,var(--cream) 0 14px,transparent 14px 34px);opacity:.9;margin:0 0 22px}
+.wrap{max-width:560px;margin:0 auto;text-align:center}
+h1{font-size:30px;font-weight:800;font-style:italic;line-height:1.1}
+.by{color:var(--pink);font-weight:800;font-size:11px;letter-spacing:1.6px;margin:4px 0 22px}
+p{color:var(--cream);font-size:16px;line-height:1.5}
+.code{margin:16px auto 6px;background:var(--gold);color:var(--ink);border-radius:16px;padding:18px 10px;font:800 30px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:1px;user-select:all;word-break:break-all}
+.small{color:var(--muted);font-size:13px}
+.btn{display:inline-block;margin:12px 6px 0;padding:13px 22px;border-radius:14px;font-weight:800;font-size:16px;text-decoration:none;border:0;cursor:pointer;font-family:inherit}
+.pink{background:var(--pink);color:#fff;box-shadow:0 4px 0 #a50f60}
+.ghost{background:var(--ink2);color:var(--cream);box-shadow:0 4px 0 #171415}
+ol{text-align:left;margin:22px auto 0;padding:18px 18px 18px 38px;background:var(--ink2);border-radius:16px;max-width:460px}
+li{margin:8px 0;font-size:15px}
+.foot{margin-top:26px}
+</style>
+</head>
+<body>
+<div class="film"></div>
+<div class="wrap">
+  <h1>Thank you for your order!</h1>
+  <div class="by">THE MUSEIC GAME · BY HILLSAN</div>
+  <p>Here is your App All Access code. It unlocks all 226 cards: Core Deck, After Dark 18+, Throwback Jams and Holidays &amp; Cookouts.</p>
+  <div class="code" id="code">MUSEIC-ALLACCESS</div>
+  <div class="small">Screenshot this page or tap Copy so you keep your code.</div>
+  <button class="btn ghost" id="copy">Copy code</button>
+  <a class="btn pink" href="https://play.hillsanenterprises.com/">Open the game</a>
+  <ol>
+    <li>Open <b>play.hillsanenterprises.com</b> on your phone, tablet or computer.</li>
+    <li>Tap <b>Get packs</b> at the top.</li>
+    <li>Type your code and tap <b>Unlock</b>. All 226 cards are now yours.</li>
+    <li>Add 2 to 8 players and press <b>Start the game</b>.</li>
+  </ol>
+  <p class="small foot">Code not working? Email <a style="color:#b79cff" href="mailto:hillsan1@yahoo.com">hillsan1@yahoo.com</a> and we will fix it fast.<br>After Dark is for adults 18+. For personal play only: please do not share or resell this code.</p>
+</div>
+<script>
+document.getElementById('copy').onclick = async function(){
+  var t = document.getElementById('code').textContent;
+  try { await navigator.clipboard.writeText(t); this.textContent = 'Copied!'; } catch(e) { this.textContent = 'Press and hold the code to copy'; }
+};
+</script>
+</body>
+</html>
