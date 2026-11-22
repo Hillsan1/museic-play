@@ -45,17 +45,41 @@ li{margin:8px 0;font-size:15px}
 </div>
 <script>
 (async function(){
-  var el = document.getElementById('code'), copy = document.getElementById('copy');
-  function fail(){ el.textContent = 'Code not loaded'; el.style.fontSize = '22px';
-    document.getElementById('help').innerHTML = 'We could not load your code on this page. Email <a style="color:#b79cff" href="mailto:hillsan1@yahoo.com">hillsan1@yahoo.com</a> with the name on your order and we will send it right away.'; copy.style.display = 'none'; }
-  try {
-    var m = location.hash.match(/k=([A-Za-z0-9_-]{43})/); if (!m) return fail();
-    var b = function(s){ s = s.replace(/-/g,'+').replace(/_/g,'/'); while (s.length % 4) s += '='; return Uint8Array.from(atob(s), function(c){ return c.charCodeAt(0); }); };
-    var key = await crypto.subtle.importKey('raw', b(m[1]), 'AES-GCM', false, ['decrypt']);
-    var pt = await crypto.subtle.decrypt({name:'AES-GCM', iv: b('1VBfJECsrmQMBLEd')}, key, b('iA3v6qYDXbgH9Qq8JTNREHEiP5jz3I5GPtrVzvL0SD5Fkiw='));
-    el.textContent = new TextDecoder().decode(pt);
-  } catch(e) { fail(); }
+  var API = 'https://museic-codes.gh-456.workers.dev';
+  var el = document.getElementById('code'), help = document.getElementById('help'), copy = document.getElementById('copy');
+  var all = location.search + '&' + location.hash.replace(/^#/, '&');
+  var om = all.match(/[?&]orderId=([A-Za-z0-9_-]{10,64})/), km = all.match(/[?&#]k=([A-Za-z0-9_-]{43})/);
+  var orderId = om ? om[1] : '';
+  function show(t){ el.textContent = t; el.style.whiteSpace = 'pre-line'; el.style.fontSize = ''; copy.style.display = ''; }
+  function fail(msg){ el.textContent = 'Almost there'; el.style.fontSize = '22px'; copy.style.display = 'none';
+    help.innerHTML = msg + ' Email <a style="color:#b79cff" href="mailto:hillsan1@yahoo.com">hillsan1@yahoo.com</a> with the name on your order and we will send your code right away.'; }
+  async function sharedCode(){
+    if (!km) return null;
+    try {
+      var b = function(s){ s = s.replace(/-/g,'+').replace(/_/g,'/'); while (s.length % 4) s += '='; return Uint8Array.from(atob(s), function(c){ return c.charCodeAt(0); }); };
+      var key = await crypto.subtle.importKey('raw', b(km[1]), 'AES-GCM', false, ['decrypt']);
+      return new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM', iv: b('1VBfJECsrmQMBLEd')}, key, b('iA3v6qYDXbgH9Qq8JTNREHEiP5jz3I5GPtrVzvL0SD5Fkiw=')));
+    } catch(e) { return null; }
+  }
   copy.onclick = async function(){ try { await navigator.clipboard.writeText(el.textContent); this.textContent = 'Copied!'; } catch(e) { this.textContent = 'Press and hold the code to copy'; } };
+  var saveKey = 'museic-claim-' + orderId;
+  try { var saved = orderId && localStorage.getItem(saveKey); if (saved) { show(saved); return; } } catch(e) {}
+  if (orderId) {
+    for (var i = 0; i < 6; i++) {
+      try {
+        var r = await fetch(API + '/claim', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({orderId: orderId})});
+        var j = await r.json();
+        if (j.ok) { var c = j.codes.join('\n'); show(c); try { localStorage.setItem(saveKey, c); } catch(e) {} return; }
+        if (/^square_/.test(j.error || '')) break;
+        if (!j.retry) { fail('We could not confirm this order.'); return; }
+      } catch(e) {}
+      el.textContent = 'Confirming your payment…';
+      await new Promise(function(res){ setTimeout(res, 2500); });
+    }
+  }
+  var sc = await sharedCode();
+  if (sc) { show(sc); return; }
+  fail(orderId ? 'We could not load your code yet.' : 'We could not find your order on this page.');
 })();
 </script>
 </body>
