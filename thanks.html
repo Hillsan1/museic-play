@@ -31,8 +31,8 @@ li{margin:8px 0;font-size:15px}
   <h1>Thank you for your order!</h1>
   <div class="by">THE MUSEIC GAME · BY HILLSAN</div>
   <p>Here is your App All Access code. It unlocks all 226 cards: Core Deck, After Dark 18+, Throwback Jams and Holidays &amp; Cookouts.</p>
-  <div class="code" id="code">MUSEIC-ALLACCESS</div>
-  <div class="small">Screenshot this page or tap Copy so you keep your code.</div>
+  <div class="code" id="code">Loading your code…</div>
+  <div class="small" id="help">Screenshot this page or tap Copy so you keep your code.</div>
   <button class="btn ghost" id="copy">Copy code</button>
   <a class="btn pink" href="https://play.hillsanenterprises.com/">Open the game</a>
   <ol>
@@ -44,10 +44,19 @@ li{margin:8px 0;font-size:15px}
   <p class="small foot">Code not working? Email <a style="color:#b79cff" href="mailto:hillsan1@yahoo.com">hillsan1@yahoo.com</a> and we will fix it fast.<br>After Dark is for adults 18+. For personal play only: please do not share or resell this code.</p>
 </div>
 <script>
-document.getElementById('copy').onclick = async function(){
-  var t = document.getElementById('code').textContent;
-  try { await navigator.clipboard.writeText(t); this.textContent = 'Copied!'; } catch(e) { this.textContent = 'Press and hold the code to copy'; }
-};
+(async function(){
+  var el = document.getElementById('code'), copy = document.getElementById('copy');
+  function fail(){ el.textContent = 'Code not loaded'; el.style.fontSize = '22px';
+    document.getElementById('help').innerHTML = 'We could not load your code on this page. Email <a style="color:#b79cff" href="mailto:hillsan1@yahoo.com">hillsan1@yahoo.com</a> with the name on your order and we will send it right away.'; copy.style.display = 'none'; }
+  try {
+    var m = location.hash.match(/k=([A-Za-z0-9_-]{43})/); if (!m) return fail();
+    var b = function(s){ s = s.replace(/-/g,'+').replace(/_/g,'/'); while (s.length % 4) s += '='; return Uint8Array.from(atob(s), function(c){ return c.charCodeAt(0); }); };
+    var key = await crypto.subtle.importKey('raw', b(m[1]), 'AES-GCM', false, ['decrypt']);
+    var pt = await crypto.subtle.decrypt({name:'AES-GCM', iv: b('1VBfJECsrmQMBLEd')}, key, b('iA3v6qYDXbgH9Qq8JTNREHEiP5jz3I5GPtrVzvL0SD5Fkiw='));
+    el.textContent = new TextDecoder().decode(pt);
+  } catch(e) { fail(); }
+  copy.onclick = async function(){ try { await navigator.clipboard.writeText(el.textContent); this.textContent = 'Copied!'; } catch(e) { this.textContent = 'Press and hold the code to copy'; } };
+})();
 </script>
 </body>
 </html>
