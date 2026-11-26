@@ -771,7 +771,7 @@ $('#codeBtn').onclick = async ()=>{
   $('#codeMsg').style.color='#ccc'; $('#codeMsg').textContent='Checking...';
   const got = await redeem(v);
   const m = $('#codeMsg');
-  if(got && got.error){ m.style.color='var(--orange)'; m.textContent = got.error === 'device_limit' ? 'This code is already in use on 3 devices. Email hillsan1@yahoo.com and we will help.' : 'This code has been turned off. Email hillsan1@yahoo.com and we will help.'; return; }
+  if(got && got.error){ m.style.color='var(--orange)'; m.textContent = got.error === 'device_limit' ? 'This code is already in use on 3 devices. Email gh@hillsanenterprises.com and we will help.' : 'This code has been turned off. Email gh@hillsanenterprises.com and we will help.'; return; }
   if(got){ m.style.color='#7ee2c2'; m.textContent = 'Unlocked: ' + got.map(p=>PACKS[p].name).join(', ') + '!'; $('#codeIn').value=''; renderShop(); if(S.phase==='setup') render(); }
   else { m.style.color='var(--orange)'; m.textContent = "That code didn't work. Game codes start with MUSE- (like MUSE-XXXX-XXXX-XXXX). Check for typos and try again, or email gh@hillsanenterprises.com and we'll help."; }
 };

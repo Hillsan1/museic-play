@@ -41,7 +41,7 @@ li{margin:8px 0;font-size:15px}
     <li>Type your code and tap <b>Unlock</b>. All 226 cards are now yours.</li>
     <li>Add 2 to 8 players and press <b>Start the game</b>.</li>
   </ol>
-  <p class="small foot">Code not working? Email <a style="color:#b79cff" href="mailto:hillsan1@yahoo.com">hillsan1@yahoo.com</a> and we will fix it fast.<br>After Dark is for adults 18+. For personal play only: please do not share or resell this code.</p>
+  <p class="small foot">Code not working? Email <a style="color:#b79cff" href="mailto:gh@hillsanenterprises.com?subject=Museic%20Game%20code%20help">gh@hillsanenterprises.com</a> and we will fix it fast.<br>After Dark is for adults 18+. For personal play only: please do not share or resell this code.</p>
 </div>
 <script>
 (async function(){
@@ -52,7 +52,7 @@ li{margin:8px 0;font-size:15px}
   var orderId = om ? om[1] : '';
   function show(t){ el.textContent = t; el.style.whiteSpace = 'pre-line'; el.style.fontSize = ''; copy.style.display = ''; }
   function fail(msg){ el.textContent = 'Almost there'; el.style.fontSize = '22px'; copy.style.display = 'none';
-    help.innerHTML = msg + ' Email <a style="color:#b79cff" href="mailto:hillsan1@yahoo.com">hillsan1@yahoo.com</a> with the name on your order and we will send your code right away.'; }
+    help.innerHTML = msg + ' Email <a style="color:#b79cff" href="mailto:gh@hillsanenterprises.com?subject=Museic%20Game%20code%20help">gh@hillsanenterprises.com</a> with the name on your order and we will send your code fast (usually within the hour). Your code also arrives by email within about an hour of purchase. Note: the 6-digit Auth code on your Square receipt is not your game code.'; }
   copy.onclick = async function(){ try { await navigator.clipboard.writeText(el.textContent); this.textContent = 'Copied!'; } catch(e) { this.textContent = 'Press and hold the code to copy'; } };
   var saveKey = 'museic-claim-' + orderId;
   try { var saved = orderId && localStorage.getItem(saveKey); if (saved) { show(saved); return; } } catch(e) {}
