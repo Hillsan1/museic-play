@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Museic Game: Code Checker (owner only)</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#141216;--card:#221e26;--line:#3a3340;--pink:#ff3d9a;--gold:#f2b84b;--green:#7ee2c2;--orange:#ff9b5c;--txt:#f3eef6;--mute:#b9aec4}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:Poppins,system-ui,sans-serif;line-height:1.45}
+  .wrap{max-width:640px;margin:0 auto;padding:22px 16px 60px}
+  h1{font-size:26px;margin:0 0 2px;font-weight:800}
+  .by{color:var(--pink);font-size:12px;letter-spacing:.12em;font-weight:600;margin-bottom:18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin:14px 0}
+  h2{font-size:17px;margin:0 0 4px}
+  p.s{color:var(--mute);font-size:13px;margin:0 0 12px}
+  input,select,textarea{width:100%;background:#17141a;border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:12px;font:inherit;font-size:16px;margin:4px 0 10px}
+  input.code{text-transform:uppercase;letter-spacing:.06em}
+  button,a.btn{display:inline-block;border:0;border-radius:999px;padding:12px 18px;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;font-size:15px}
+  .pink{background:var(--pink);color:#fff}.ghost{background:#2c2632;color:var(--txt)}
+  .res{margin-top:12px;padding:12px;border-radius:12px;font-size:14px;white-space:pre-line;display:none}
+  .ok{display:block;background:rgba(126,226,194,.12);border:1px solid var(--green);color:var(--green)}
+  .warn{display:block;background:rgba(242,184,75,.12);border:1px solid var(--gold);color:var(--gold)}
+  .bad{display:block;background:rgba(255,155,92,.12);border:1px solid var(--orange);color:var(--orange)}
+  ol{padding-left:20px;margin:6px 0 0;color:var(--mute);font-size:14px}
+  li{margin:4px 0}
+  .tiny{font-size:12px;color:var(--mute)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Code Checker</h1>
+  <div class="by">THE MUSEIC GAME · OWNER TOOL · DO NOT SHARE THIS LINK</div>
+
+  <div class="card">
+    <h2>1. Check a code</h2>
+    <p class="s">Type the code the customer has. This check is free: it does not use up any of their 3 devices.</p>
+    <input class="code" id="code" placeholder="MUSE-XXXX-XXXX-XXXX" autocomplete="off">
+    <button class="pink" id="checkBtn">Check code</button>
+    <div class="res" id="checkRes"></div>
+  </div>
+
+  <div class="card">
+    <h2>2. Find a buyer's code from their order</h2>
+    <p class="s">For app buyers. In Square, open Orders, tap the customer, and copy the long ID at the end of the web address (like 7raQsGUHb4mIomwoq82rRqN0Cw8YY). Paste it here to see the code for that order instantly.</p>
+    <input id="order" placeholder="Square order ID" autocomplete="off">
+    <button class="pink" id="orderBtn">Show their code</button>
+    <div class="res" id="orderRes"></div>
+  </div>
+
+  <div class="card">
+    <h2>3. Fix it now</h2>
+    <p class="s">Sends a fix request to your support inbox. The support system picks it up within the hour and emails the customer. For an instant fix, open your Claude chat and paste the same details.</p>
+    <input id="fxEmail" type="email" placeholder="Customer email">
+    <input id="fxOrder" placeholder="Order # or Square order ID (if you have it)">
+    <select id="fxType">
+      <option value="NEW CODE">Never got a code: send them one</option>
+      <option value="RESEND">Lost their code: re-send it</option>
+      <option value="REPLACE">Code doesn't work: send a new one</option>
+      <option value="DEVICE RESET">Used on 3 devices already</option>
+    </select>
+    <textarea id="fxNote" rows="2" placeholder="Anything else (optional)"></textarea>
+    <a class="btn pink" id="fxBtn" href="#">Send fix request</a>
+    <button class="ghost" id="copyBtn">Copy details for Claude</button>
+    <div class="res" id="fxRes"></div>
+  </div>
+
+  <div class="card">
+    <h2>Quick answers for customers</h2>
+    <ol>
+      <li><b>6-digit number</b> (like 638565): that's the card Auth code on the Square receipt, not the game code. Game codes start with MUSE-.</li>
+      <li><b>How to unlock:</b> hillsanenterprises.com/play, tap Get packs, type the code, tap Unlock.</li>
+      <li><b>When codes arrive:</b> instant on screen with the game's Buy button; by email within about 30 minutes for store orders.</li>
+      <li><b>Each code</b> works on up to 3 devices.</li>
+      <li><b>Boxed decks</b> ship by February 28, 2027, and each box has an app code card.</li>
+    </ol>
+  </div>
+  <p class="tiny">Alerts: you get a phone alert for every app sale, every code sent, and every problem, around the clock.</p>
+</div>
+<script>
+(function(){
+  var API = 'https://museic-codes.gh-456.workers.dev';
+  var WRAPS = null;
+  function $(id){ return document.getElementById(id); }
+  function show(el, cls, txt){ el.className = 'res ' + cls; el.textContent = txt; }
+  function u8(b){ return Uint8Array.from(atob(b), function(c){ return c.charCodeAt(0); }); }
+  async function loadWraps(){
+    if (WRAPS) return WRAPS;
+    var t = await (await fetch('/?v=' + Date.now(), {cache:'no-store'})).text();
+    var m = t.match(/const WRAPS = (\[[\s\S]*?\]);/);
+    WRAPS = m ? JSON.parse(m[1]) : [];
+    return WRAPS;
+  }
+  var NAMES = {core:'Core Deck', dark:'After Dark 18+', throwback:'Throwback Jams', holiday:'Holidays & Cookouts'};
+  $('checkBtn').onclick = async function(){
+    var el = $('checkRes'); var raw = $('code').value.trim();
+    var norm = raw.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (!norm) return;
+    if (/^[0-9]{4,8}$/.test(norm)) { show(el, 'bad', 'That is a receipt number (card Auth code), not a game code. Game codes start with MUSE-. Use section 2 or 3 to get the customer their real code.'); return; }
+    if (norm.indexOf('MUSE') !== 0 || norm.length !== 16) { show(el, 'bad', 'That does not look like a game code. Game codes look like MUSE-XXXX-XXXX-XXXX (4 groups). Check for typos: the letter O and number 0 are easy to mix up.'); return; }
+    show(el, 'warn', 'Checking...');
+    try {
+      var w = await loadWraps();
+      var base = await crypto.subtle.importKey('raw', new TextEncoder().encode('museic:' + norm), 'PBKDF2', false, ['deriveKey']);
+      var k = await crypto.subtle.deriveKey({name:'PBKDF2', salt:new TextEncoder().encode('museic-game-2026'), iterations:150000, hash:'SHA-256'}, base, {name:'AES-GCM', length:256}, false, ['decrypt']);
+      for (var i = 0; i < w.length; i++) {
+        try {
+          var pt = await crypto.subtle.decrypt({name:'AES-GCM', iv:u8(w[i].iv)}, k, u8(w[i].ct));
+          var got = Object.keys(JSON.parse(new TextDecoder().decode(pt))).map(function(p){ return NAMES[p] || p; });
+          show(el, 'ok', 'VALID CODE. It unlocks: ' + got.join(', ') + '.\nIf the customer says it fails: make sure they are at hillsanenterprises.com/play, tapped Get packs, and typed it exactly. If it says "already in use on 3 devices", choose "Used on 3 devices already" in section 3.');
+          return;
+        } catch (e) {}
+      }
+      show(el, 'warn', 'This is not one of the email or box-card codes. It may be an instant-checkout code (made by the code server for a paid order). Those cannot be tested here without using one of the customer’s 3 devices. Fastest fix: use section 2 with their order ID to see the right code for their order, or section 3 to send them a new one.');
+    } catch (e) { show(el, 'bad', 'Could not run the check (no internet?). Try again.'); }
+  };
+  $('orderBtn').onclick = async function(){
+    var el = $('orderRes'); var id = $('order').value.trim().replace(/^.*\//, '');
+    if (!id) return;
+    show(el, 'warn', 'Looking up the order...');
+    try {
+      var r = await fetch(API + '/claim', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({orderId:id})});
+      var j = await r.json();
+      if (j.ok) { show(el, 'ok', 'Code for this order:\n' + j.codes.join('\n') + '\n\nSend it to the customer (section 3 → "Lost their code"), or reply to them with it.'); return; }
+      var why = {no_order:'Square has no app order with that ID. Check you copied the whole ID from the order page.', not_paid:'That order is not paid yet.'}[j.error] || ('The code server said: ' + (j.error || 'unknown') + '.');
+      show(el, 'bad', why + ' If this is a store order, use section 3 instead.');
+    } catch (e) { show(el, 'bad', 'Could not reach the code server. Try again in a minute.'); }
+  };
+  function details(){
+    return 'FIX CODE: ' + $('fxType').value + '\nCustomer email: ' + $('fxEmail').value.trim() + '\nOrder: ' + ($('fxOrder').value.trim() || 'unknown') + '\nNote: ' + ($('fxNote').value.trim() || '-');
+  }
+  $('fxBtn').onclick = function(e){
+    e.preventDefault();
+    if (!/@/.test($('fxEmail').value)) { show($('fxRes'), 'bad', 'Add the customer’s email first.'); return; }
+    var subj = 'FIX CODE: ' + $('fxType').value + ' for ' + $('fxEmail').value.trim();
+    location.href = 'mailto:gh@hillsanenterprises.com?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(details());
+    show($('fxRes'), 'ok', 'Your email app should open with the request filled in. Tap Send. The support system handles it within the hour and alerts your phone when done.');
+  };
+  $('copyBtn').onclick = async function(){
+    try { await navigator.clipboard.writeText(details()); show($('fxRes'), 'ok', 'Copied. Paste it into your Claude chat for an instant fix.'); }
+    catch (e) { show($('fxRes'), 'warn', details()); }
+  };
+})();
+</script>
+</body>
+</html>
